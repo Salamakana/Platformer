@@ -103,12 +103,14 @@ public class LevelManager : Singelton<LevelManager>
 
 	public void OnLevelCompleted()
 	{
-		if (currentLevelIndex.Equals(levelReached - 1)) 
+		if (currentLevelIndex.Equals(levelReached - 1))
 		{
 			SaveManager.Instance.SaveValue("LevelReached", levelReached++);
 			UIManager.Instance.CheckUnlockedLevels();
 		}
 	}
+
+	#region COROUTINES
 
 	private IEnumerator ILoadLevel(LevelData levelData)
 	{
@@ -161,4 +163,6 @@ public class LevelManager : Singelton<LevelManager>
 		yield return null;
 
 	}
+
+	#endregion COROUTINES
 }

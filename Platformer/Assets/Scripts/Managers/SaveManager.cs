@@ -44,6 +44,8 @@ public class SaveManager : Singelton<SaveManager>
 
     #endregion LOADING
 
+    #region DELETING
+
     public void DeleteKey(string keyName)
     {
         PlayerPrefs.DeleteKey(keyName);
@@ -53,4 +55,6 @@ public class SaveManager : Singelton<SaveManager>
     {
         PlayerPrefs.DeleteAll();
     }
+
+    #endregion DELETING
 }

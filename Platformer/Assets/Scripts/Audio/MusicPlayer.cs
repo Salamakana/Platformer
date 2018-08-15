@@ -7,7 +7,6 @@ public class MusicPlayer : Singelton<MusicPlayer>
 	private void Start ()
 	{
 		CreateMusicSourceContainers();
-
 		PlayRandomMusicTrack();
 	}
 
@@ -23,7 +22,6 @@ public class MusicPlayer : Singelton<MusicPlayer>
 			musicSourceObject.transform.SetParent(musicTracksConteiner.transform);
 		}
 	}
-
 
 	public void ChangeRandomMusicTrack()
 	{

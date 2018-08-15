@@ -26,32 +26,38 @@ public class UIManager : Singelton<UIManager>
     private bool isFading = false;
 
     public bool IsFading { get { return isFading; } }
+    public bool IsOverUIElement
+    {
+        get
+        {
+            return EventSystem.current.IsPointerOverGameObject();
+        }
+    }
 
     #endregion VARIABLES
+
+    private Sprite SearchSpriteFromArray(Sprite[] sprites, string spriteName)
+    {
+        foreach (var sprite in sprites)
+        {
+            if (spriteName.Equals(sprite.name))
+            {
+                return sprite;
+            }
+        }
+
+        return null;
+    }
 
     private void Start()
     {
         GetReferences();
-
         CreateLevelButtons(LevelMaps);
-
-        screenFadeImage.fillAmount = 1f;
-
+        CheckUnlockedLevels();
+        SetScrollbarValues();
         SetMenuUI();
-
         FadeScreenImage(0f);
     } 
-
-    private void ResetHUD()
-    {
-        collectableCount = 0;
-        UpdateHUD();
-    }
-
-    private void UpdateHUD()
-    {
-        collectableCountText.text = collectableCount.ToString();
-    }
 
     private void GetReferences()
     {
@@ -75,8 +81,7 @@ public class UIManager : Singelton<UIManager>
         musicVolumeScrollbar = optionsPanelButtonContainer.transform.Find("MusicVolumeScrollbar").GetComponent<Scrollbar>();
 
         screenFadeImage = GameMaster.Instance.ScreenFadeImageObject.GetComponent<Image>();
-
-        SetScrollbarValues();     
+        screenFadeImage.fillAmount = 1f;   
     }
 
     private void SetScrollbarValues()
@@ -113,41 +118,6 @@ public class UIManager : Singelton<UIManager>
         }
     }
 
-    private Sprite SearchSpriteFromArray(Sprite[] sprites, string spriteName)
-    {
-        foreach (var sprite in sprites)
-        {
-            if (spriteName.Equals(sprite.name))
-            {
-                return sprite;
-            }
-        }
-
-        return null;
-    }
-
-    private void OnLevelButtonClicked(LevelData levelData)
-    {
-        LevelManager.Instance.LoadMap(levelData);
-        LevelManager.Instance.CurrentLevelIndex = levelData.LevelIndex;
-        MusicPlayer.Instance.ChangeRandomMusicTrack();
-
-        SfxLibrary.Instance.PlayUISfx("Button1");
-    }
-
-    public void FadeScreenImage(float targetFillAmount)
-    {
-        StartCoroutine(IFadeScreenImage(targetFillAmount, 1f));
-    }
-
-    public bool IsOverUIElement
-    {
-        get
-        {
-            return EventSystem.current.IsPointerOverGameObject();
-        }
-    }
-
     public void AddCollectable(int amount)
     {
         collectableCount += amount;
@@ -167,6 +137,17 @@ public class UIManager : Singelton<UIManager>
                 levelButton.interactable = levelData.IsUnlocked ? true : false;
             }
         }
+    }
+
+    #region UI_BUTTON_FUNCTIONS
+
+    private void OnLevelButtonClicked(LevelData levelData)
+    {
+        LevelManager.Instance.LoadMap(levelData);
+        LevelManager.Instance.CurrentLevelIndex = levelData.LevelIndex;
+        MusicPlayer.Instance.ChangeRandomMusicTrack();
+
+        SfxLibrary.Instance.PlayUISfx("Button1");
     }
 
     public void OnPauseButtonClicked()
@@ -231,6 +212,21 @@ public class UIManager : Singelton<UIManager>
         Debug.Log("Game progress has been saved!");
     }
 
+    #endregion UI_BUTTON_FUNCTIONS
+
+    #region UI_FUNCTIONS
+
+    private void ResetHUD()
+    {
+        collectableCount = 0;
+        UpdateHUD();
+    }
+
+    private void UpdateHUD()
+    {
+        collectableCountText.text = collectableCount.ToString();
+    }
+
     private void SetPauseUI()
     {
         timeControlPanel.SetActive(false);
@@ -271,6 +267,15 @@ public class UIManager : Singelton<UIManager>
         Time.timeScale = 0;
     }
 
+    #endregion UI_FUNCTIONS
+
+    #region COROUTINES
+
+    public void FadeScreenImage(float targetFillAmount)
+    {
+        StartCoroutine(IFadeScreenImage(targetFillAmount, 1f));
+    }
+
     private IEnumerator IFadeScreenImage(float targetFillAmount, float fadeSpeed)
     {
         isFading = true;
@@ -287,4 +292,6 @@ public class UIManager : Singelton<UIManager>
 
         //yield return new WaitForSecondsRealtime(1);
     }
+
+    #endregion COROUTINES
 }
